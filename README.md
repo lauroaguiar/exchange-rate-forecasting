@@ -1,1 +1,41 @@
-📊 CambioReport: Previsão da Taxa de Câmbio (Napkin Model)Este repositório contém a implementação em R de um modelo de previsão da taxa de câmbio nominal brasileira (BRL/USD), baseado na metodologia Exchange Rate Forecasting on a Napkin de Ca' Zorzi e Rubaszek (2020).O projeto foi desenvolvido no contexto do Ibmec Macro Horizon para analisar a dinâmica cambial e testar a hipótese de reversão à média da Taxa de Câmbio Real (RER).🎯 ObjetivoO objetivo principal é projetar a taxa de câmbio nominal (NER) assumindo que a taxa de câmbio real tende a retornar à sua média histórica (Paridade do Poder de Compra - PPP) ao longo do tempo. O modelo utiliza uma abordagem de meia-vida (half-life) para estimar a velocidade desse ajuste.🧠 MetodologiaO código implementa as seguintes etapas teóricas e empíricas:Coleta de Dados: Extração automática de dados do Banco Central do Brasil (BCB) via pacote rbcb.Série 11752: Taxa de Câmbio Real Efetiva (IPCA).Série 3698: Taxa de Câmbio Nominal (R$/US$).Cálculo de Desvios: Definição do equilíbrio via média móvel de 3 anos (36 meses) da taxa real.Modelo de Meia-Vida Adaptativo:Ao contrário do modelo estático puro, este código ajusta o parâmetro $\rho$ (velocidade de convergência) dependendo do horizonte de previsão ($h$):$h \le 3$ meses: $\rho = 0.95$ (Reversão mais rápida).$3 < h \le 6$ meses: $\rho = 0.97$.$h > 6$ meses: $\rho = 0.981$ (Padrão da literatura, meia-vida de 3 anos).Benchmarking: Comparação da performance do modelo contra um Random Walk (Passeio Aleatório).Validação:Cálculo do RMSE (Root Mean Square Error).Teste de Diebold-Mariano (DM Test) para verificar significância estatística da diferença entre as previsões.🛠️ Tecnologias e PacotesO projeto foi desenvolvido em R. As principais bibliotecas utilizadas são:Coleta de Dados: rbcb, quantmod, OECD (via GitHub).Manipulação de Dados: dplyr, lubridate, zoo, timetk.Modelagem e Séries Temporais: forecast, tseries, tvReg, dlm.Visualização: ggplot2, scales (com paleta de cores personalizada).Avaliação: Metrics.
+# 📊 CambioReport: 
+Previsão da Taxa de Câmbio (Napkin Model)Este repositório contém a implementação em R de um modelo de previsão da taxa de câmbio nominal brasileira (BRL/USD), baseado na metodologia Exchange Rate Forecasting on a Napkin de Ca' Zorzi e Rubaszek (2020).O projeto foi desenvolvido no contexto do Ibmec Macro Horizon para analisar a dinâmica cambial e testar a hipótese de reversão à média da Taxa de Câmbio Real (RER).
+
+# 🎯 Objetivo
+O objetivo principal é projetar a taxa de câmbio nominal (NER) assumindo que a taxa de câmbio real tende a retornar à sua média histórica (Paridade do Poder de Compra - PPP) ao longo do tempo. O modelo utiliza uma abordagem de meia-vida (half-life) para estimar a velocidade desse ajuste.
+# 🧠 Metodologia
+
+1. O código implementa as seguintes etapas teóricas e empíricas:
+- Coleta de Dados: 
+- Extração automática de dados do Banco Central do Brasil (BCB) via pacote rbcb. 
+- Série 11752: Taxa de Câmbio Real Efetiva (IPCA).
+- Série 3698: Taxa de Câmbio Nominal (R$/US$).
+
+2. Cálculo de Desvios: Definição do equilíbrio via média móvel de 3 anos (36 meses) da taxa real.
+  
+3. Modelo de Meia-Vida Adaptativo: Ao contrário do modelo estático puro, este código ajusta o parâmetro $\rho$ (velocidade de convergência) dependendo do horizonte de previsão ($h$):
+   - $h \le 3$ meses: $\rho = 0.95$ (Reversão mais rápida).
+   - $3 < h \le 6$ meses: $\rho = 0.97$.
+   - $h > 6$ meses: $\rho = 0.981$ (Padrão da literatura, meia-vida de 3 anos).
+   - 
+4. Benchmarking:
+   - Comparação da performance do modelo contra um Random Walk (Passeio Aleatório).
+   - Validação:Cálculo do RMSE (Root Mean Square Error).
+   - Teste de Diebold-Mariano (DM Test) para verificar significância estatística da diferença entre as previsões.
+     
+## 🛠️ Tecnologias e Pacotes
+
+O projeto foi desenvolvido em R. As principais bibliotecas utilizadas são:
+- Coleta de Dados: rbcb, quantmod, OECD (via GitHub). 
+- Manipulação de Dados: dplyr, lubridate, zoo, timetk.
+- Modelagem e Séries Temporais: forecast, tseries, tvReg, dlm.
+- Visualização: ggplot2, scales (com paleta de cores personalizada).
+- Avaliação: Metrics.
+
+# ✍️ Autores
+Gabriela Colen
+Lauro Aguiar 
+
+# 📄 Referência
+Baseado no artigo:
+Ca' Zorzi, M., & Rubaszek, M. (2020). Exchange rate forecasting on a napkin. Journal of International Money and Finance.
