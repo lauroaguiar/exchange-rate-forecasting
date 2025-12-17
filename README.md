@@ -1,44 +1,58 @@
-# 📊 Prevendo a Taxa de Câmbio Nominal em um Guardanapo
-Este repositório contém a implementação em R de um modelo de previsão da taxa de câmbio nominal brasileira (BRL/USD), baseado na metodologia Exchange Rate Forecasting on a Napkin de Ca' Zorzi e Rubaszek (2020).
-O projeto foi desenvolvido no contexto do IbMacro para analisar a dinâmica cambial e testar a hipótese de reversão à média da Taxa de Câmbio Real (RER).
+# 📊 Exchange Rate Forecasting on a Napkin
 
-# 🎯 Objetivo
-O objetivo principal é projetar a taxa de câmbio nominal (NER) assumindo que a taxa de câmbio real tende a retornar à sua média histórica (Paridade do Poder de Compra - PPP) ao longo do tempo. O modelo utiliza uma abordagem de meia-vida (half-life) para estimar a velocidade desse ajuste.
-# 🧠 Metodologia
+> **R implementation of the BRL/USD nominal exchange rate forecasting model.**
 
-1. O código implementa as seguintes etapas teóricas e empíricas:
-- Coleta de Dados: 
-- Extração automática de dados do Banco Central do Brasil (BCB) via pacote rbcb. 
-- Série 11752: Taxa de Câmbio Real Efetiva (IPCA).
-- Série 3698: Taxa de Câmbio Nominal (R$/US$).
+[![R](https://img.shields.io/badge/Made_with-R-blue?style=for-the-badge&logo=R)](https://www.r-project.org/)
+[![Status](https://img.shields.io/badge/Status-Educational-yellow?style=for-the-badge)]()
 
-2. Cálculo de Desvios: Definição do equilíbrio via média móvel de 3 anos (36 meses) da taxa real.
-  
-3. Modelo de Meia-Vida Adaptativo: Ao contrário do modelo estático puro, este código ajusta o parâmetro $\rho$ (velocidade de convergência) dependendo do horizonte de previsão ($h$):
-   - $h \le 3$ meses: $\rho = 0.95$ (Reversão mais rápida).
-   - $3 < h \le 6$ meses: $\rho = 0.97$.
-   - $h > 6$ meses: $\rho = 0.981$ (Padrão da literatura, meia-vida de 3 anos).
-     
-4. Benchmarking:
-   - Comparação da performance do modelo contra um Random Walk (Passeio Aleatório).
-   - Validação:Cálculo do RMSE (Root Mean Square Error).
-   - Teste de Diebold-Mariano (DM Test) para verificar significância estatística da diferença entre as previsões.
-     
-## 🛠️ Tecnologias e Pacotes
+This repository contains the R implementation of a forecasting model for the Brazilian nominal exchange rate (BRL/USD), based on the **"Exchange Rate Forecasting on a Napkin"** methodology by Ca' Zorzi and Rubaszek (2020).
 
-O projeto foi desenvolvido em R. As principais bibliotecas utilizadas são:
-- Coleta de Dados: rbcb, quantmod, OECD (via GitHub). 
-- Manipulação de Dados: dplyr, lubridate, zoo, timetk.
-- Modelagem e Séries Temporais: forecast, tseries, tvReg, dlm.
-- Visualização: ggplot2, scales (com paleta de cores personalizada).
-- Avaliação: Metrics.
+The project was developed under **IbMacro** to analyze exchange rate dynamics and test the **Mean Reversion** hypothesis of the Real Exchange Rate (RER).
 
-# ✍️ Autores
-Gabriela Colen
-Lauro Aguiar 
+# 🎯 Objective
 
-# 📄 Referência
-Baseado no artigo: Ca' Zorzi, M., & Rubaszek, M. (2020). Exchange rate forecasting on a napkin. Journal of International Money and Finance.
+The main objective is to project the **Nominal Exchange Rate (NER)** assuming that the Real Exchange Rate tends to return to its historical mean (Purchasing Power Parity - PPP) over time. The model utilizes a **half-life** approach to estimate the speed of this adjustment.
 
--- 
-*Este projeto é de cunho acadêmico e educacional, desenvolvido no âmbito do IbMacro.*
+# 🧠 Methodology
+
+The code implements the following theoretical and empirical steps:
+
+### 1. Data Collection
+Automatic data extraction from the **Central Bank of Brazil (BCB)** via the `rbcb` package:
+* **Series 11752:** Real Effective Exchange Rate (IPCA).
+* **Series 3698:** Nominal Exchange Rate (BRL/USD).
+
+### 2. Deviation Calculation
+Definition of equilibrium via a **3-year (36-month) moving average** of the real rate.
+
+### 3. Adaptive Half-Life Model
+Unlike the pure static model, this code adjusts the parameter $\rho$ (convergence speed) depending on the forecast horizon ($h$):
+* $h \le 3$ months: $\rho = 0.95$ (Faster reversion).
+* $3 < h \le 6$ months: $\rho = 0.97$.
+* $h > 6$ months: $\rho = 0.981$ (Literature standard, 3-year half-life).
+
+### 4. Benchmarking & Validation
+* **Comparison:** Model performance vs. a **Random Walk**.
+* **Metrics:** RMSE (Root Mean Square Error).
+* **Significance:** **Diebold-Mariano Test (DM Test)** to verify the statistical significance of the difference between forecasts.
+
+## 🛠️ Technologies & Packages
+
+The project was developed in **R**. Key libraries include:
+
+* **Data Collection:** `rbcb`, `quantmod`, `OECD` (via GitHub).
+* **Data Manipulation:** `dplyr`, `lubridate`, `zoo`, `timetk`.
+* **Modeling & Time Series:** `forecast`, `tseries`, `tvReg`, `dlm`.
+* **Visualization:** `ggplot2`, `scales` (with custom color palette).
+* **Evaluation:** `Metrics`.
+
+# ✍️ Authors
+* **Gabriela Colen**
+* **Lauro Aguiar**
+
+# 📄 Reference
+Based on the paper:
+> Ca' Zorzi, M., & Rubaszek, M. (2020). *Exchange rate forecasting on a napkin*. Journal of International Money and Finance.
+
+---
+*This is an academic and educational project developed under IbMacro.*
