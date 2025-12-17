@@ -1,6 +1,6 @@
 # 📊 Exchange Rate Forecasting on a Napkin
 
-> **R implementation of the BRL/USD nominal exchange rate forecasting model.**
+> **Official repository for the exchange rate analysis developed for the Macroeconomic Outlook report by the IbMacro student-led league**
 
 [![R](https://img.shields.io/badge/Made_with-R-blue?style=for-the-badge&logo=R)](https://www.r-project.org/)
 [![Status](https://img.shields.io/badge/Status-Educational-yellow?style=for-the-badge)]()
