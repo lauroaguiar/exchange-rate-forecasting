@@ -17,7 +17,7 @@ O objetivo principal é projetar a taxa de câmbio nominal (NER) assumindo que a
    - $h \le 3$ meses: $\rho = 0.95$ (Reversão mais rápida).
    - $3 < h \le 6$ meses: $\rho = 0.97$.
    - $h > 6$ meses: $\rho = 0.981$ (Padrão da literatura, meia-vida de 3 anos).
-   - 
+     
 4. Benchmarking:
    - Comparação da performance do modelo contra um Random Walk (Passeio Aleatório).
    - Validação:Cálculo do RMSE (Root Mean Square Error).
@@ -37,5 +37,4 @@ Gabriela Colen
 Lauro Aguiar 
 
 # 📄 Referência
-Baseado no artigo:
-Ca' Zorzi, M., & Rubaszek, M. (2020). Exchange rate forecasting on a napkin. Journal of International Money and Finance.
+Baseado no artigo: Ca' Zorzi, M., & Rubaszek, M. (2020). Exchange rate forecasting on a napkin. Journal of International Money and Finance.
