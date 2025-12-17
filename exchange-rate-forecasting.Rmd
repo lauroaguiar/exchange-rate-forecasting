@@ -1,0 +1,217 @@
+---
+title: "CambioReport"
+author: "Lauro Aguiar"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+install.packages("xfun", dependencies = TRUE)
+```
+
+Pacotes
+
+```{r}
+# Instalação dos pacotes necessários (se necessário)
+install.packages(c("rbcb", "quantmod", "dplyr", "lubridate", "ggplot2", 
+                   "forecast", "tseries", "tvReg", "xgboost", "timetk", 
+                   "Metrics", "devtools","scales","dlm","zoo", "caret"))
+
+devtools::install_github("expersso/OECD")
+
+# Carregar pacotes
+library(rbcb)
+library(quantmod)
+library(OECD)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(tvReg)
+library(xgboost)
+library(timetk)
+library(Metrics)
+library(scales)
+library(dlm)
+library(zoo)
+library(caret)
+```
+
+Definição das cores padrão do relatório
+
+```{r}
+# 
+cores_padrao <- c(
+  azul_escuro1 = "#002C5E",
+  azul_escuro2 = "#02023C",
+  amarelo = "#FEB712",
+  cinza_claro = "#A6A6A6",
+  cinza_escuro = "#3A3A3A",
+  azul_claro = "#46B1E1"
+)
+
+```
+
+# Download das séries
+
+```{r}
+# Série 11752: Índice da taxa de câmbio real efetiva (IPCA)
+reer <- get_series(11752, start_date = "1995-01-01", end_date = Sys.Date())
+
+# Série 3698: Taxa de câmbio nominal (R$/US$)
+ner <- get_series(3698, start_date = "1995-01-01", end_date = Sys.Date())
+
+# Pré-visualização dos dados
+head(reer)
+head(ner)
+
+```
+
+# Unir as séries temporais e remover valores ausentes
+
+```{r}
+bd <- full_join(reer, ner, by = "date") %>%
+  na.omit() %>%
+  rename(reer = `11752`, ner = `3698`) %>%
+  mutate(
+    ln_reer = log(reer),
+    reer_medio = zoo::rollmean(reer, 36, fill = NA, align = "right"),  # Média móvel de 3 anos
+    desvio_reer = reer - reer_medio
+  )
+
+# Exibir as primeiras linhas da base de dados
+head(bd)
+```
+
+#Análise de Estacionariedade (Teste ADF)
+
+```{r}
+adf_test <- adf.test(bd$ln_reer)
+print(adf_test)
+
+if (adf_test$p.value < 0.05) {
+  cat("A série é estacionária ao nível de 5%.\n")
+} else {
+  cat("Não há evidências suficientes para rejeitar a hipótese de raiz unitária.\n")
+}
+
+```
+
+# Parâmetros do modelo
+
+```{r}
+ajustar_rho <- function(h) {
+  if (h <= 3) {
+    return(0.95)  # Reversão mais rápida para 1-3 meses
+  } else if (h <= 6) {
+    return(0.97)  # Ajuste intermediário para 4-6 meses
+  } else {
+    return(0.981) # Para 12 meses, mantém o original
+  }
+}
+```
+
+Criar função para gerar previsões para diferentes horizontes
+
+```{r}
+projetar_ner <- function(h) {
+  rho_h <- ajustar_rho(h)  # Escolher rho com base no horizonte
+  bd %>%
+    mutate(
+      proj_variacao = (rho_h^h - 1) * desvio_reer,
+      ner_projetado = ner * exp(proj_variacao)
+    ) %>%
+    na.omit() %>%
+    mutate(horizonte = h)
+}
+```
+
+Aplicar a função para diferentes horizontes (1 a 6 meses)
+
+```{r}
+projecoes_ner <- bind_rows(lapply(c(1:6, 12), projetar_ner))
+
+# Exibir as primeiras linhas
+head(projecoes_ner)
+```
+
+# Estimação do Random Walk
+
+```{r}
+projetar_rw <- function(h) {
+  bd %>%
+    mutate(
+      ner_projetado = lag(ner, h)  # Random Walk: previsão = último valor conhecido
+    ) %>%
+    na.omit() %>%
+    mutate(horizonte = h)
+}
+
+rw_projecoes <- bind_rows(lapply(c(1:6, 12), projetar_rw))
+```
+
+RMSE e Teste
+
+```{r}
+calcular_metricas <- function(h) {
+  proj <- projecoes_ner %>% filter(horizonte == h)
+  rw_proj <- rw_projecoes %>% filter(horizonte == h)
+  
+  rmse_modelo <- RMSE(proj$ner_projetado, lead(proj$ner, h), na.rm = TRUE)
+  rmse_rw <- RMSE(rw_proj$ner_projetado, lead(rw_proj$ner, h), na.rm = TRUE)
+  
+  erro_modelo <- na.omit((proj$ner_projetado - lead(proj$ner, h))^2)
+  erro_rw <- na.omit((rw_proj$ner_projetado - lead(rw_proj$ner, h))^2)
+  min_length <- min(length(erro_modelo), length(erro_rw))
+  
+  dm_test <- dm.test(erro_modelo[1:min_length], erro_rw[1:min_length], h = h, power = 2)
+
+  return(tibble(Horizonte = h, RMSE_Modelo = rmse_modelo, RMSE_RW = rmse_rw, p_valor_DM = dm_test$p.value))
+}
+
+metricas <- bind_rows(lapply(c(1:6, 12), calcular_metricas))
+
+# Exibir tabela de métricas
+kable(metricas, caption = "Comparação de Desempenho entre Modelos", digits = 4)
+
+```
+
+Visualização
+
+```{r}
+plot_ner <- function(h) {
+  ggplot(projecoes_ner %>% filter(horizonte == h), aes(x = date)) +
+    geom_line(aes(y = ner, color = "Realizado"), size = 1) +
+    geom_line(aes(y = ner_projetado, color = "Projetado"), size = 1) +
+    scale_color_manual(
+      values = c("Realizado" = "#02023C",  # Azul escuro
+                 "Projetado" = "#46B1E1") # Azul claro
+    ) +
+    scale_x_date(date_breaks = "3 months", date_labels = "%b") +  # Trimestres
+    labs(
+      title = paste("Projeção da Taxa de Câmbio - Horizonte", h, "mês(es)"),
+      x = "Data",
+      y = "Taxa de Câmbio",
+      color = "Legenda"
+    ) +
+    theme_minimal()
+}
+
+```
+
+Primeira seção - Gráficos
+
+```{r}
+grid.arrange(plot_ner(1), plot_ner(2), plot_ner(3), plot_ner(4), ncol = 2)
+```
+
+Segunda seção - gráficos
+
+```{r}
+grid.arrange(plot_ner(5), plot_ner(6), plot_ner(12), ncol = 2)
+```
