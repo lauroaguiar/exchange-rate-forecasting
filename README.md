@@ -39,3 +39,6 @@ Lauro Aguiar
 
 # 📄 Referência
 Baseado no artigo: Ca' Zorzi, M., & Rubaszek, M. (2020). Exchange rate forecasting on a napkin. Journal of International Money and Finance.
+
+-- 
+*Este projeto é de cunho acadêmico e educacional, desenvolvido no âmbito do IbMacro.*
