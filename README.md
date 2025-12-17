@@ -7,8 +7,6 @@
 
 This repository contains the R implementation of a forecasting model for the Brazilian nominal exchange rate (BRL/USD), based on the **"Exchange Rate Forecasting on a Napkin"** methodology by Ca' Zorzi and Rubaszek (2020).
 
-The project was developed under **IbMacro** to analyze exchange rate dynamics and test the **Mean Reversion** hypothesis of the Real Exchange Rate (RER).
-
 # 🎯 Objective
 
 The main objective is to project the **Nominal Exchange Rate (NER)** assuming that the Real Exchange Rate tends to return to its historical mean (Purchasing Power Parity - PPP) over time. The model utilizes a **half-life** approach to estimate the speed of this adjustment.
