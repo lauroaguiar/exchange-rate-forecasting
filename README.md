@@ -1,5 +1,5 @@
-# 📊 CambioReport: 
-Previsão da Taxa de Câmbio (Napkin Model)Este repositório contém a implementação em R de um modelo de previsão da taxa de câmbio nominal brasileira (BRL/USD), baseado na metodologia Exchange Rate Forecasting on a Napkin de Ca' Zorzi e Rubaszek (2020).O projeto foi desenvolvido no contexto do Ibmec Macro Horizon para analisar a dinâmica cambial e testar a hipótese de reversão à média da Taxa de Câmbio Real (RER).
+# 📊 Prevendo a Taxa de Câmbio Nominal em um Guardanapo
+Este repositório contém a implementação em R de um modelo de previsão da taxa de câmbio nominal brasileira (BRL/USD), baseado na metodologia Exchange Rate Forecasting on a Napkin de Ca' Zorzi e Rubaszek (2020).O projeto foi desenvolvido no contexto do Ibmec Macro Horizon para analisar a dinâmica cambial e testar a hipótese de reversão à média da Taxa de Câmbio Real (RER).
 
 # 🎯 Objetivo
 O objetivo principal é projetar a taxa de câmbio nominal (NER) assumindo que a taxa de câmbio real tende a retornar à sua média histórica (Paridade do Poder de Compra - PPP) ao longo do tempo. O modelo utiliza uma abordagem de meia-vida (half-life) para estimar a velocidade desse ajuste.
